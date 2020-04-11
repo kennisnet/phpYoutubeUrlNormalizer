@@ -48,7 +48,7 @@ class YoutubeUrlNormalizer {
             throw new UnexpectedValueException( "URL should not be empty" );
         }
 
-        $this->parsed_url = parse_url( $url );
+        $this->parsed_url = parse_url( trim($url) );
         $this->checkHost();
 
         if ( $this->isYoutube ) {
@@ -84,7 +84,7 @@ class YoutubeUrlNormalizer {
             
             case "channel":
             $this->type = "channel";
-            $this->identifier = $exploded_path[2];
+            $this->setIdentifier($exploded_path[2]);
             break;
             
             case "playlist":
@@ -93,19 +93,19 @@ class YoutubeUrlNormalizer {
             
             case "user":
             $this->type = "user";
-            $this->identifier = $exploded_path[2];
+            $this->setIdentifier($exploded_path[2]);
             break;
 
             case "v":
             case "embed":
             $this->type = "video";
-            $this->identifier = $exploded_path[2];
+            $this->setIdentifier($exploded_path[2]);
             break;
             
             default:
             if ( $this->parsed_url["host"] == "youtu.be") {
                 $this->type = "video";
-                $this->identifier = $exploded_path[1];
+                $this->setIdentifier($exploded_path[1]);
             }
             else {
                 $this->isYoutube = False;
@@ -119,15 +119,27 @@ class YoutubeUrlNormalizer {
      * Depending on type, set normalized url variants.
      */
     public function setNormalized() {
-        if ( $this->type == "video" ) {
+        if ( empty($this->type) || !$this->isYoutube ) {
+            return;
+        }
+
+        if ( $this->type != "playlist" && empty($this->identifier) ) {
+            $this->isYoutube = False;
+            return;
+        }
+
+        switch ( $this->type ) {
+            case "video":
             $this->normalized = "https://youtu.be/".$this->identifier;
             $this->normalized_parameters = "https://youtu.be/".$this->identifier."?".$this->getParameterString();
-        }
-        elseif ( $this->type == "playlist" ) {
+            break;
+
+            case "playlist":
             $this->normalized = "https://www.youtube.com/".$this->type."?list=".$this->parameters["list"];
             $this->normalized_parameters = "https://www.youtube.com/".$this->type."?".$this->getParameterString();
-        }
-        else {
+            break;
+
+            default:
             $this->normalized = "https://www.youtube.com/".$this->type."/".$this->identifier;
         }
     }
@@ -148,7 +160,7 @@ class YoutubeUrlNormalizer {
 
             switch ( $key ) {
                 case "v":
-                $this->identifier = $value;
+                $this->setIdentifier($value);
                 break;
                 case "feature":
                 case "index":
@@ -173,6 +185,22 @@ class YoutubeUrlNormalizer {
         }
 
         return implode("&", $parameters);
+    }
+
+    /**
+     * Sets identifier after some validation.
+     * Only basic validation for now.
+     * 
+     * @param string $identifier Identifier to set.
+     * @see https://webapps.stackexchange.com/questions/54443/format-for-id-of-youtube-video  
+     */
+    private function setIdentifier( $identifier ) {
+        # no type conditional yet, so check minimum length 11 for videoID
+        if ( strlen($identifier) < 11 ) {
+            $this->isYoutube = False;
+        }
+
+        $this->identifier = $identifier;
     }
 }
 ?>
