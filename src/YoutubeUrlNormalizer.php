@@ -6,7 +6,7 @@ use \UnexpectedValueException;
 /**
 * PHP library for normalizing Youtube Urls. 
 *
-* @version 0.0.1
+* @version 0.0.2
 * @author Wim Muskee <wimmuskee@gmail.com>
 *
 * Copyright 2020 Stichting Kennisnet
@@ -61,11 +61,13 @@ class YoutubeUrlNormalizer {
      * Use parsed_url host information to parse some variables.
      */
     public function checkHost() {
-        if ( substr( strrev( $this->parsed_url["host"] ), 0, 11 ) == strrev("youtube.com") ) {
+        if ( $this->parsed_url["host"] == "youtu.be") {
             $this->isYoutube = True;
         }
-
-        if ( $this->parsed_url["host"] == "youtu.be") {
+        elseif ( $this->parsed_url["host"] == "youtube.com") {
+            $this->isYoutube = True;
+        }
+        elseif ( substr( strrev( $this->parsed_url["host"] ), 0, 12 ) == strrev(".youtube.com") ) {
             $this->isYoutube = True;
         }
     }

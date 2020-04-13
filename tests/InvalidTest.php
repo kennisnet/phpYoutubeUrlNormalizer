@@ -7,7 +7,14 @@ use PHPUnit\Framework\TestCase;
 class InvalidTest extends TestCase {
 
     public function testNonYoutubeHost() {
-        $url = "https://www.example.org";
+        $url = "https://www.example.org/watch?v=7cZFk68S3js";
+        $yt = new YoutubeUrlNormalizer($url);
+        $this->assertFalse($yt->isYoutube);
+        $this->assertEmpty($yt->normalized);
+    }
+
+    public function testPrefixedYoutubeHost() {
+        $url = "http://fakeyoutube.com/watch?v=7cZFk68S3js";
         $yt = new YoutubeUrlNormalizer($url);
         $this->assertFalse($yt->isYoutube);
         $this->assertEmpty($yt->normalized);
