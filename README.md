@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kennisnet/phpYoutubeUrlNormalizer.svg?branch=master)](https://travis-ci.org/kennisnet/phpYoutubeUrlNormalizer)
+
 # phpYoutubeUrlNormalizer
 PHP library for normalizing Youtube urls.
 
