@@ -55,7 +55,7 @@ class InvalidTest extends TestCase {
         $this->assertEmpty($yt->normalized);
     }
 
-    public function testBlaBlaBlaBla() {
+    public function testInvalidUrl() {
         $url = "blablabla";
         $yt = new YoutubeUrlNormalizer($url);
         $this->assertFalse($yt->isYoutube);
