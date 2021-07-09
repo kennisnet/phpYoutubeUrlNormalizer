@@ -61,6 +61,11 @@ class YoutubeUrlNormalizer {
      * Use parsed_url host information to parse some variables.
      */
     public function checkHost() {
+        if (!isset($this->parsed_url["host"])) {
+            $this->isYoutube = false;
+            return;
+        }
+
         if ( $this->parsed_url["host"] == "youtu.be") {
             $this->isYoutube = True;
         }
@@ -77,22 +82,27 @@ class YoutubeUrlNormalizer {
      * the rest accordingly.
      */
     public function checkPath() {
-        $exploded_path = explode("/", $this->parsed_url["path"]);
+        $exploded_path = explode("/", isset($this->parsed_url["path"]) ? $this->parsed_url["path"] : '');
+
+        if (count($exploded_path) <= 1) {
+            $this->isYoutube = false;
+            return;
+        }
 
         switch ( $exploded_path[1] ) {
             case "watch":
             $this->type = "video";
             break;
-            
+
             case "channel":
             $this->type = "channel";
             $this->setIdentifier($exploded_path[2]);
             break;
-            
+
             case "playlist":
             $this->type = "playlist";
             break;
-            
+
             case "user":
             $this->type = "user";
             $this->setIdentifier($exploded_path[2]);
@@ -103,7 +113,7 @@ class YoutubeUrlNormalizer {
             $this->type = "video";
             $this->setIdentifier($exploded_path[2]);
             break;
-            
+
             default:
             if ( $this->parsed_url["host"] == "youtu.be") {
                 $this->type = "video";

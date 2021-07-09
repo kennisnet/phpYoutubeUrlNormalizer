@@ -20,6 +20,13 @@ class InvalidTest extends TestCase {
         $this->assertEmpty($yt->normalized);
     }
 
+    public function testNoPath() {
+        $url = "https://www.youtube.com";
+        $yt = new YoutubeUrlNormalizer($url);
+        $this->assertFalse($yt->isYoutube);
+        $this->assertEmpty($yt->normalized);
+    }
+
     public function testNonYoutubePath() {
         $url = "https://www.youtube.com/testinvalid";
         $yt = new YoutubeUrlNormalizer($url);
@@ -43,6 +50,13 @@ class InvalidTest extends TestCase {
 
     public function testMissingRequiredParameter() {
         $url = "http://nl.youtube.com/watch?w=7cZFk68S3js";
+        $yt = new YoutubeUrlNormalizer($url);
+        $this->assertFalse($yt->isYoutube);
+        $this->assertEmpty($yt->normalized);
+    }
+
+    public function testInvalidUrl() {
+        $url = "blablabla";
         $yt = new YoutubeUrlNormalizer($url);
         $this->assertFalse($yt->isYoutube);
         $this->assertEmpty($yt->normalized);
