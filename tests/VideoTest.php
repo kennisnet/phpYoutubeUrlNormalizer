@@ -44,4 +44,12 @@ class VideoTest extends TestCase {
         $this->assertTrue($yt->isYoutube);
         $this->assertEquals("https://youtu.be/7cZFk68S3js", $yt->normalized);
     }
+
+    public function testNoInputParamsInUrl() {
+        $url = "https://www.youtube.com/watch?v=NVhmq-pB_cs";
+        $yt = new YoutubeUrlNormalizer($url);
+        $this->assertTrue($yt->isYoutube);
+        $this->assertEquals("https://youtu.be/NVhmq-pB_cs", $yt->normalized);
+        $this->assertEquals("https://youtu.be/NVhmq-pB_cs", $yt->normalized_parameters);
+    }
 }
